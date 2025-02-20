@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bild & Text Spiel</title>
+    <title>Bild & Video Spiel</title>
 </head>
 <body>
     <h2>Klicke oder tippe, um das Spiel zu starten</h2>
@@ -16,12 +16,14 @@
             <source id="videoSource" src="" type="video/mp4">
             Dein Browser unterstützt kein HTML5-Video.
         </video>
-        <script>
+    </div>
+
+    <script>
         const mediaFiles = [
-            {src: "static/1.jpg", text: "Hier sind die drei Inseln, die du betreten kannst. Wähle eine und bereite dich auf ein Abenteuer vor!<br><br>Erstens. Die Infernalische Klippe. Eine vulkanische Insel mit glühenden Lavaströmen, schwarzen Felsen und mystischen, leuchtenden Symbolen in Obsidian eingraviert. Gefahren lauern in der Hitze.<br><br>Zweitens. Der Verschleierte Sumpf. Eine düstere, neblige Sumpflandschaft mit knorrigen Bäumen, grünem Dunst und hölzernen Hütten auf Stelzen. Schattenhafte Kreaturen lauern im Nebel.<br><br>Drittens. Das Himmlische Atoll. Eine schwebende Insel mit herabfallenden Wasserfällen, alten Ruinen, üppiger Vegetation und schimmernden blauen Kristallen. Magische Energie liegt in der Luft.<br><br>Welche Insel wählst du?"}
+            {src: "static/1.jpg", text: "Hier sind die drei Inseln, die du betreten kannst. Wähle eine und bereite dich auf ein Abenteuer vor!<br><br>Erstens. Die Infernalische Klippe. Eine vulkanische Insel mit glühenden Lavaströmen, schwarzen Felsen und mystischen, leuchtenden Symbolen in Obsidian eingraviert. Gefahren lauern in der Hitze.<br><br>Zweitens. Der Verschleierte Sumpf. Eine düstere, neblige Sumpflandschaft mit knorrigen Bäumen, grünem Dunst und hölzernen Hütten auf Stelzen. Schattenhafte Kreaturen lauern im Nebel.<br><br>Drittens. Das Himmlische Atoll. Eine schwebende Insel mit herabfallenden Wasserfällen, alten Ruinen, üppiger Vegetation und schimmernden blauen Kristallen. Magische Energie liegt in der Luft.<br><br>Welche Insel wählst du?"},
             {src: "static/2.jpg", text: "Hier ist das zweite Bild."},
             {src: "static/3.jpg", text: "Das dritte Bild ist nun sichtbar."},
-            {src: "static/1 extra.mp4", text: "Das dritte Bild ist nun sichtbar."},
+            {src: "static/1_extra.mp4", text: "Das dritte Bild ist nun sichtbar."},
             {src: "static/4.jpg", text: "Dies ist das erste Bild."},
             {src: "static/5.jpg", text: "Hier ist das zweite Bild."},
             {src: "static/6.jpg", text: "Das dritte Bild ist nun sichtbar."},
@@ -60,14 +62,39 @@
         ];
 
         let index = 0;
-        let gameStarted = false; // Um zu prüfen, ob das Spiel bereits gestartet wurde
+        let gameStarted = false;
 
-        function displayImage() {
-            if (index < images.length) {
-                const imgElement = document.getElementById('image');
-                imgElement.src = images[index].src;
-                console.log("Zeige Bild:", images[index].src);
-                speakText(images[index].text);
+        function displayMedia() {
+            if (index < mediaFiles.length) {
+                const imageElement = document.getElementById('image');
+                const videoElement = document.getElementById('video');
+                const videoSource = document.getElementById('videoSource');
+
+                const currentMedia = mediaFiles[index];
+                console.log("Zeige Medium:", currentMedia.src);
+
+                if (currentMedia.src.endsWith(".mp4")) {
+                    // Falls es ein Video ist
+                    imageElement.style.display = "none"; // Bild ausblenden
+                    videoElement.style.display = "block"; // Video anzeigen
+                    videoSource.src = currentMedia.src;
+                    videoElement.load(); // Video neu laden
+                    videoElement.play(); // Automatisch abspielen
+                    
+                    // Warte, bis das Video zu Ende ist, dann weiter zum nächsten Medium
+                    videoElement.onended = () => {
+                        index++;
+                        setTimeout(displayMedia, 1000);
+                    };
+
+                } else {
+                    // Falls es ein Bild ist
+                    imageElement.src = currentMedia.src;
+                    imageElement.style.display = "block"; // Bild anzeigen
+                    videoElement.style.display = "none"; // Video ausblenden
+                    
+                    speakText(currentMedia.text); // Sprachausgabe starten
+                }
             }
         }
 
@@ -79,26 +106,23 @@
 
             const speech = new SpeechSynthesisUtterance(text);
             speech.lang = "de-DE"; 
-            speech.rate = 1.0; 
-            speech.pitch = 1.0; 
-            speech.volume = 1.0; 
+            speech.rate = 1.0;
+            speech.pitch = 1.0;
+            speech.volume = 1.0;
 
             console.log("Starte Sprachausgabe:", text);
 
-            // Vorherige Sprachausgabe stoppen
             window.speechSynthesis.cancel();
 
-            // Warte kurz, bevor die neue Sprachausgabe beginnt
             setTimeout(() => {
                 window.speechSynthesis.speak(speech);
             }, 200);
 
-            // Wenn die Sprachausgabe endet, zeige das nächste Bild
             speech.onend = () => {
                 console.log("Sprachausgabe beendet.");
                 index++;
-                if (index < images.length) {
-                    setTimeout(displayImage, 1000);
+                if (index < mediaFiles.length) {
+                    setTimeout(displayMedia, 1000);
                 }
             };
 
@@ -109,12 +133,11 @@
 
         function startGame() {
             if (!gameStarted) {
-                gameStarted = true; // Verhindert, dass das Spiel mehrfach startet
-                displayImage();
+                gameStarted = true;
+                displayMedia();
             }
         }
 
-        // Klick- und Touch-Event hinzufügen
         document.body.addEventListener("click", startGame);
         document.body.addEventListener("touchstart", startGame);
 
