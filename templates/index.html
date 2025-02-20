@@ -20,6 +20,8 @@
             if (index < images.length) {
                 const imgElement = document.getElementById('image');
                 imgElement.src = images[index].src;
+
+                console.log("Zeige Bild:", images[index].src);
                 speakText(images[index].text);
             }
         }
@@ -30,10 +32,24 @@
                 return;
             }
 
+            // Neues Sprachobjekt erstellen
             const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = "de-DE"; // Sicherstellen, dass die richtige Sprache genutzt wird
-            
-            // Event-Listener, um zum nächsten Bild zu wechseln, wenn die Sprachausgabe beendet ist
+            speech.lang = "de-DE"; // Deutsche Sprache setzen
+            speech.rate = 1.0; // Normale Sprechgeschwindigkeit
+            speech.pitch = 1.0; // Standard-Pitch
+            speech.volume = 1.0; // Maximale Lautstärke
+
+            console.log("Starte Sprachausgabe:", text);
+
+            // Sicherstellen, dass keine vorherige Sprachausgabe aktiv ist
+            window.speechSynthesis.cancel();
+
+            // Warte, bis `speechSynthesis` bereit ist
+            setTimeout(() => {
+                window.speechSynthesis.speak(speech);
+            }, 200);
+
+            // Wenn die Sprachausgabe beendet ist, wechsle zum nächsten Bild
             speech.onend = () => {
                 console.log("Sprachausgabe beendet.");
                 index++;
@@ -42,18 +58,15 @@
                 }
             };
 
+            // Fehlerbehandlung für Sprachsynthese
             speech.onerror = (e) => {
                 console.error("Fehler in der Sprachsynthese:", e);
             };
-
-            // Sicherstellen, dass vorherige Spracheingaben gestoppt werden, bevor eine neue gestartet wird
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(speech);
         }
 
+        // Startet das erste Bild und den ersten Text
         window.onload = () => {
-            // Kurze Verzögerung, um sicherzustellen, dass SpeechSynthesis bereit ist
-            setTimeout(displayImage, 500);
+            setTimeout(displayImage, 1000);
         };
     </script>
 </body>
