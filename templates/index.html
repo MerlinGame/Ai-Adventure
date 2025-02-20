@@ -6,7 +6,10 @@
     <title>Bild & Text Spiel</title>
 </head>
 <body>
-    <img id="image" src="" alt="Bildanzeige" style="width: 80%; max-height: 500px; object-fit: contain; display: block; margin: auto;">
+    <h2>Klicke oder tippe, um das Spiel zu starten</h2>
+    <img id="image" src="" alt="Bildanzeige" 
+         style="width: 80%; max-height: 500px; object-fit: contain; display: block; margin: auto; cursor: pointer;">
+    
     <script>
         const images = [
             {src: "static/1.jpg", text: "Dies ist das erste Bild."},
@@ -15,12 +18,12 @@
         ];
 
         let index = 0;
+        let gameStarted = false; // Um zu prüfen, ob das Spiel bereits gestartet wurde
 
         function displayImage() {
             if (index < images.length) {
                 const imgElement = document.getElementById('image');
                 imgElement.src = images[index].src;
-
                 console.log("Zeige Bild:", images[index].src);
                 speakText(images[index].text);
             }
@@ -32,24 +35,23 @@
                 return;
             }
 
-            // Neues Sprachobjekt erstellen
             const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = "de-DE"; // Deutsche Sprache setzen
-            speech.rate = 1.0; // Normale Sprechgeschwindigkeit
-            speech.pitch = 1.0; // Standard-Pitch
-            speech.volume = 1.0; // Maximale Lautstärke
+            speech.lang = "de-DE"; 
+            speech.rate = 1.0; 
+            speech.pitch = 1.0; 
+            speech.volume = 1.0; 
 
             console.log("Starte Sprachausgabe:", text);
 
-            // Sicherstellen, dass keine vorherige Sprachausgabe aktiv ist
+            // Vorherige Sprachausgabe stoppen
             window.speechSynthesis.cancel();
 
-            // Warte, bis `speechSynthesis` bereit ist
+            // Warte kurz, bevor die neue Sprachausgabe beginnt
             setTimeout(() => {
                 window.speechSynthesis.speak(speech);
             }, 200);
 
-            // Wenn die Sprachausgabe beendet ist, wechsle zum nächsten Bild
+            // Wenn die Sprachausgabe endet, zeige das nächste Bild
             speech.onend = () => {
                 console.log("Sprachausgabe beendet.");
                 index++;
@@ -58,16 +60,22 @@
                 }
             };
 
-            // Fehlerbehandlung für Sprachsynthese
             speech.onerror = (e) => {
                 console.error("Fehler in der Sprachsynthese:", e);
             };
         }
 
-        // Startet das erste Bild und den ersten Text
-        window.onload = () => {
-            setTimeout(displayImage, 1000);
-        };
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true; // Verhindert, dass das Spiel mehrfach startet
+                displayImage();
+            }
+        }
+
+        // Klick- und Touch-Event hinzufügen
+        document.body.addEventListener("click", startGame);
+        document.body.addEventListener("touchstart", startGame);
+
     </script>
 </body>
 </html>
