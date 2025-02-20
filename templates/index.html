@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -6,15 +6,16 @@
     <title>Bild & Text Spiel</title>
 </head>
 <body>
-    <img id="image" src="" alt="Bildanzeige" style="width: 80%; max-height: 500px;">
+    <img id="image" src="" alt="Bildanzeige" style="width: 80%; max-height: 500px; object-fit: contain; display: block; margin: auto;">
     <script>
         const images = [
             {src: "static/1.jpg", text: "Dies ist das erste Bild."},
             {src: "static/2.jpg", text: "Hier ist das zweite Bild."},
             {src: "static/3.jpg", text: "Das dritte Bild ist nun sichtbar."}
         ];
-        
+
         let index = 0;
+
         function displayImage() {
             if (index < images.length) {
                 const imgElement = document.getElementById('image');
@@ -24,15 +25,36 @@
         }
 
         function speakText(text) {
+            if (!window.speechSynthesis) {
+                console.error("Sprachsynthese wird nicht unterstützt!");
+                return;
+            }
+
             const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = "de-DE"; // Sicherstellen, dass die richtige Sprache genutzt wird
+            
+            // Event-Listener, um zum nächsten Bild zu wechseln, wenn die Sprachausgabe beendet ist
             speech.onend = () => {
+                console.log("Sprachausgabe beendet.");
                 index++;
-                setTimeout(displayImage, 1000);
+                if (index < images.length) {
+                    setTimeout(displayImage, 1000);
+                }
             };
+
+            speech.onerror = (e) => {
+                console.error("Fehler in der Sprachsynthese:", e);
+            };
+
+            // Sicherstellen, dass vorherige Spracheingaben gestoppt werden, bevor eine neue gestartet wird
+            window.speechSynthesis.cancel();
             window.speechSynthesis.speak(speech);
         }
 
-        window.onload = displayImage;
+        window.onload = () => {
+            // Kurze Verzögerung, um sicherzustellen, dass SpeechSynthesis bereit ist
+            setTimeout(displayImage, 500);
+        };
     </script>
 </body>
 </html>
