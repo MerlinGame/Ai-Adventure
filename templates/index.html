@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild & Text Spiel</title>
+</head>
+<body>
+    <img id="image" src="" alt="Bildanzeige" style="width: 80%; max-height: 500px;">
+    <script>
+        const images = [
+            {src: "static/1.jpg", text: "Dies ist das erste Bild."},
+            {src: "static/2.jpg", text: "Hier ist das zweite Bild."},
+            {src: "static/3.jpg", text: "Das dritte Bild ist nun sichtbar."}
+        ];
+        
+        let index = 0;
+        function displayImage() {
+            if (index < images.length) {
+                const imgElement = document.getElementById('image');
+                imgElement.src = images[index].src;
+                speakText(images[index].text);
+            }
+        }
+
+        function speakText(text) {
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.onend = () => {
+                index++;
+                setTimeout(displayImage, 1000);
+            };
+            window.speechSynthesis.speak(speech);
+        }
+
+        window.onload = displayImage;
+    </script>
+</body>
+</html>
