@@ -7,11 +7,17 @@
 </head>
 <body>
     <h2>Klicke oder tippe, um das Spiel zu starten</h2>
-    <img id="image" src="" alt="Bildanzeige" 
-         style="width: 80%; max-height: 500px; object-fit: contain; display: block; margin: auto; cursor: pointer;">
     
-    <script>
-        const images = [
+    <!-- Container für Bild oder Video -->
+    <div id="mediaContainer" style="text-align: center;">
+        <img id="image" src="" alt="Bildanzeige" 
+             style="width: 80%; max-height: 500px; object-fit: contain; display: block; margin: auto; cursor: pointer;">
+        <video id="video" controls style="width: 80%; max-height: 500px; display: none;">
+            <source id="videoSource" src="" type="video/mp4">
+            Dein Browser unterstützt kein HTML5-Video.
+        </video>
+        <script>
+        const mediaFiles = [
             {src: "static/1.jpg", text: "Hier sind die drei Inseln, die du betreten kannst. Wähle eine und bereite dich auf ein Abenteuer vor!<br><br>Erstens. Die Infernalische Klippe. Eine vulkanische Insel mit glühenden Lavaströmen, schwarzen Felsen und mystischen, leuchtenden Symbolen in Obsidian eingraviert. Gefahren lauern in der Hitze.<br><br>Zweitens. Der Verschleierte Sumpf. Eine düstere, neblige Sumpflandschaft mit knorrigen Bäumen, grünem Dunst und hölzernen Hütten auf Stelzen. Schattenhafte Kreaturen lauern im Nebel.<br><br>Drittens. Das Himmlische Atoll. Eine schwebende Insel mit herabfallenden Wasserfällen, alten Ruinen, üppiger Vegetation und schimmernden blauen Kristallen. Magische Energie liegt in der Luft.<br><br>Welche Insel wählst du?"}
             {src: "static/2.jpg", text: "Hier ist das zweite Bild."},
             {src: "static/3.jpg", text: "Das dritte Bild ist nun sichtbar."},
